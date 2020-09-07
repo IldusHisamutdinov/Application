@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="mainLeftMargin">16dp</dimen>
+    <dimen name="mainRightMargin">16dp</dimen>
+
+
+    //Item Dimen
+    <dimen name="itemCardViewMarginTop">4dp</dimen>
+    <dimen name="itemCardViewMarginBottom">4dp</dimen>
+    <dimen name="itemCardViewMarginStart">4dp</dimen>
+    <dimen name="itemCardViewMarginEnd">4dp</dimen>
+    <dimen name="itemCardViewMargin">4dp</dimen>
+
+    <dimen name="itemTextViewMarginTop">8dp</dimen>
+    <dimen name="itemTextViewMarginBottom">8dp</dimen>
+    <dimen name="itemTextViewMarginStart">8dp</dimen>
+    <dimen name="itemTextViewMarginEnd">8dp</dimen>
+    <dimen name="itemTextViewMargin">8dp</dimen>
+
+    <dimen name="itemCardViewCornerRadius">10dp</dimen>
+    <dimen name="title_size">21sp</dimen>
+    <dimen name="text_size">18sp</dimen>
+
+
+</resources>
