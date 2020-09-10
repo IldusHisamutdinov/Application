@@ -2,4 +2,5 @@
     <string name="app_name">Заметки</string>
 
     <string name="toolbar_title">Заметки</string>
+    <string name="new_note_title" />
 </resources>
