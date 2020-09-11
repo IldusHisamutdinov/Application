@@ -34,6 +34,7 @@ class NoteActivity : AppCompatActivity() {
             }
             context.startActivity(this)
         }
+
     }
 
     private var note: Note? = null
@@ -58,16 +59,9 @@ class NoteActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this).get(NoteViewModel::class.java)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-//        supportActionBar?.title = note?.let { note ->
-//            SimpleDateFormat(DATE_FORMAT, Locale.getDefault()).format(note.lastChanged)
-//        } ?: getString(R.string.new_note_title)
-
-        supportActionBar?.title =
-            if(note==null){
-                getString(R.string.new_note_title)
-            }else{
-                SimpleDateFormat(DATE_FORMAT, Locale.getDefault()).format(note!!.lastChanged)
-            }
+        supportActionBar?.title = note?.let { note ->
+            SimpleDateFormat(DATE_FORMAT, Locale.getDefault()).format(note.lastChanged)
+        } ?: getString(R.string.new_note_title)
 
         initView()
     }
