@@ -13,6 +13,14 @@ data class Note(
     val lastChanged: Date = Date()
 ): Parcelable {
 
+    constructor(): this(
+        UUID.randomUUID().toString(),
+        "Моя первая заметка",
+        "Kotlin очень краткий, но при этом выразительный язык"
+    ) {
+
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

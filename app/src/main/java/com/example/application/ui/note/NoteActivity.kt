@@ -3,44 +3,42 @@ package com.example.application.ui.note
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.provider.ContactsContract
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.ViewModelProvider
+
 import com.example.application.R
-import com.example.application.data.NotesRepository.saveNote
 import com.example.application.data.entity.Note
-import kotlinx.android.synthetic.main.activity_main.*
+import com.example.application.ui.base.BaseActivity
 import kotlinx.android.synthetic.main.activity_main.toolbar
 import kotlinx.android.synthetic.main.activity_note.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-class NoteActivity : AppCompatActivity() {
+
+class NoteActivity : BaseActivity<Note?, NoteViewState>() {
 
     companion object {
- //       private val EXTRA_NOTE = NoteActivity::class.java.name + "extra.NOTE"
-        private const val DATE_FORMAT = "dd.MMM.yy HH:mm"
-        private val EXTRA_NOTE = "note"
+        private const val EXTRA_NOTE = "note"
+        private const val DATE_FORMAT = "dd.MM.yy HH:mm"
 
-        fun start(context: Context, note: Note? = null) =
-            Intent(context, NoteActivity::class.java).apply {
-
-            note?.let {
-                putExtra(EXTRA_NOTE, note)
+        fun start(context: Context, noteId: String? = null) =
+            Intent(context, NoteActivity::class.java).run {
+                noteId?.let {
+                    putExtra(EXTRA_NOTE, noteId)
+                }
+                context.startActivity(this)
             }
-            context.startActivity(this)
-        }
-
     }
 
     private var note: Note? = null
-    lateinit var viewModel: NoteViewModel
+    override val viewModel: NoteViewModel by lazy {
+        ViewModelProvider(this).get(NoteViewModel::class.java)
+    }
+    override val layoutRes = R.layout.activity_note
 
-    val textChangeListener = object: TextWatcher {
+    val textChangeListener = object : TextWatcher {
         override fun afterTextChanged(s: Editable?) {
             saveNote()
         }
@@ -51,18 +49,27 @@ class NoteActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_note)
         setSupportActionBar(toolbar)
 
-        note = intent.getParcelableExtra(EXTRA_NOTE)
-
-        viewModel = ViewModelProvider(this).get(NoteViewModel::class.java)
-
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        val noteId = intent.getStringExtra(EXTRA_NOTE)
+
+        noteId?.let { id ->
+            viewModel.loadNote(id)
+        } ?: let {
+            supportActionBar?.title = getString(R.string.new_note_title)
+        }
+        initView()
+    }
+
+    override fun renderData(data: Note?) {
+        this.note = data
         supportActionBar?.title = note?.let { note ->
             SimpleDateFormat(DATE_FORMAT, Locale.getDefault()).format(note.lastChanged)
-        } ?: getString(R.string.new_note_title)
-
+        } ?: let {
+            getString(R.string.new_note_title)
+        }
         initView()
     }
 
@@ -71,7 +78,7 @@ class NoteActivity : AppCompatActivity() {
         editTextText.removeTextChangedListener(textChangeListener)
 
         note?.let { note ->
-            editTextTitle.setText(note.title)
+            editTextTitle.setTextKeepState(note.title)
             editTextText.setText(note.text)
 
             val color = when (note.color) {
@@ -82,8 +89,8 @@ class NoteActivity : AppCompatActivity() {
                 Note.Color.RED -> R.color.color_red
                 Note.Color.VIOLET -> R.color.color_violet
             }
+
             toolbar.setBackgroundColor(color)
-//            toolbar.setBackgroundColor(ResourcesCompat.getColor(resources, color, null))
         }
 
         editTextTitle.addTextChangedListener(textChangeListener)
@@ -91,13 +98,17 @@ class NoteActivity : AppCompatActivity() {
     }
 
     private fun saveNote() {
-        if (editTextTitle.text == null || editTextTitle.text!!.length < 2) return
+        if (editTextTitle.text == null || editTextTitle.text!!.length < 3) return
 
         note = note?.copy(
             title = editTextTitle.text.toString(),
             text = editTextText.text.toString(),
             lastChanged = Date()
-        ) ?: Note(UUID.randomUUID().toString(), editTextTitle.text.toString(), editTextText.text.toString())
+        ) ?: Note(
+            UUID.randomUUID().toString(),
+            editTextTitle.text.toString(),
+            editTextText.text.toString()
+        )
 
         note?.let {
             viewModel.save(it)
@@ -112,4 +123,3 @@ class NoteActivity : AppCompatActivity() {
         else -> super.onOptionsItemSelected(item)
     }
 }
-

@@ -5,37 +5,43 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.application.R
+import com.example.application.data.entity.Note
+import com.example.application.ui.base.BaseActivity
+import com.example.application.ui.base.BaseViewModel
 import com.example.application.ui.note.NoteActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity<List<Note>?, MainViewState>() {
 
-    private lateinit var viewModel: MainViewModel
+    override val viewModel: BaseViewModel<List<Note>?, MainViewState> by lazy {
+        ViewModelProvider(this).get(MainViewModel::class.java)
+    }
+    override val layoutRes = R.layout.activity_main
     private lateinit var adapter: MainAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
-        rv_notes.layoutManager = GridLayoutManager(this, 1)
+        rv_notes.layoutManager = LinearLayoutManager(this@MainActivity, LinearLayoutManager.VERTICAL, false)
+
         adapter = MainAdapter{
-            NoteActivity.start(this, it)
+            NoteActivity.start(this@MainActivity, it.id)
         }
-        rv_notes.adapter = adapter
 
-        viewModel.viewState().observe(this, Observer { value ->
-            value?.let { value ->
-                adapter.notes = value.notes
-            }
-        })
+       rv_notes.adapter = adapter
 
         fab.setOnClickListener {
-            NoteActivity.start(this)
+            NoteActivity.start(this@MainActivity)
+        }
+    }
+
+    override fun renderData(data: List<Note>?) {
+        data?.let {
+            adapter.notes = it
         }
     }
 }
-
