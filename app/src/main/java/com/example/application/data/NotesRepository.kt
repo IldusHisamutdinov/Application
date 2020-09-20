@@ -8,6 +8,7 @@ object NotesRepository {
 
     val remoteProvider: RemoteDataProvider = FirestoreDataProvider()
 
+    fun getCurrentUser() = remoteProvider.getCurrentUser()
     fun getNotes() = remoteProvider.subscribeToAllNotes()
     fun saveNote(note: Note) = remoteProvider.saveNote(note)
     fun getNoteById(id: String) = remoteProvider.getNoteById(id)

@@ -6,20 +6,12 @@ import java.util.*
 
 @Parcelize
 data class Note(
-    val id: String,
-    var title: String,
-    var text: String,
+    val id: String = "",
+    var title: String = "",
+    var text: String = "",
     val color: Color = Color.WHITE,
     val lastChanged: Date = Date()
-): Parcelable {
-
-    constructor(): this(
-        UUID.randomUUID().toString(),
-        "Моя первая заметка",
-        "Kotlin очень краткий, но при этом выразительный язык"
-    ) {
-
-    }
+) : Parcelable {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -32,10 +24,6 @@ data class Note(
         return true
     }
 
-    override fun hashCode(): Int {
-        return id.hashCode()
-    }
-
     enum class Color {
         WHITE,
         YELLOW,
@@ -44,6 +32,7 @@ data class Note(
         RED,
         VIOLET,
     }
+
 }
 
 
