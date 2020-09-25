@@ -7,40 +7,37 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 
-import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.application.R
 import com.example.application.data.entity.Note
+import com.example.application.data.provider.FirestoreDataProvider
 import com.example.application.ui.base.BaseActivity
-import com.example.application.ui.base.BaseViewModel
 import com.example.application.ui.note.NoteActivity
 import com.example.application.ui.splash.SplashActivity
 import com.firebase.ui.auth.AuthUI
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_note.toolbar
+import org.koin.android.ext.android.inject
+import org.koin.android.viewmodel.ext.android.viewModel
 
 class MainActivity : BaseActivity<List<Note>?, MainViewState>(), LogoutDialog.LogoutListener {
+
+    val firestoreProvider: FirestoreDataProvider by inject()
 
     companion object {
         fun start(context: Context) = Intent(context, MainActivity::class.java).apply {
             context.startActivity(this)
         }
     }
-
-    override val viewModel: MainViewModel by lazy {
-        ViewModelProvider(this).get(MainViewModel::class.java)
-    }
-    override val layoutRes = R.layout.activity_main
+    override val layoutRes: Int = R.layout.activity_main
+    override val viewModel: MainViewModel by viewModel()
     private lateinit var adapter: MainAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setSupportActionBar(toolbar)
         rv_notes.layoutManager =
-            LinearLayoutManager(this@MainActivity, LinearLayoutManager.VERTICAL, false)
+            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
         adapter = MainAdapter {
             NoteActivity.start(this@MainActivity, it.id)
@@ -49,7 +46,7 @@ class MainActivity : BaseActivity<List<Note>?, MainViewState>(), LogoutDialog.Lo
         rv_notes.adapter = adapter
 
         fab.setOnClickListener {
-            NoteActivity.start(this@MainActivity)
+            NoteActivity.start(this)
         }
     }
 
@@ -85,3 +82,4 @@ class MainActivity : BaseActivity<List<Note>?, MainViewState>(), LogoutDialog.Lo
     }
 
 }
+

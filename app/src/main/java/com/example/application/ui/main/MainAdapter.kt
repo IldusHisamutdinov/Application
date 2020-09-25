@@ -4,10 +4,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.cardview.widget.CardView
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.application.R
 import com.example.application.data.entity.Note
+import com.example.application.extensions.getColorInt
+import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.item_note.view.*
 
 class MainAdapter(val onItemClick: ((Note) -> Unit)? = null) :
@@ -26,27 +27,17 @@ class MainAdapter(val onItemClick: ((Note) -> Unit)? = null) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(notes[position])
 
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun bind(note: Note) = with(itemView) {
+    inner class ViewHolder(override val containerView: View) : RecyclerView.ViewHolder(containerView), LayoutContainer {
+        fun bind(note: Note) = with(itemView as CardView) {
             title.text = note.title
             text.text = note.text
-            //    setCardBackgroundColor(color)
-
-            val color = when (note.color) {
-                Note.Color.WHITE -> R.color.color_white
-                Note.Color.YELLOW -> R.color.color_yellow
-                Note.Color.GREEN -> R.color.color_green
-                Note.Color.BLUE -> R.color.color_blue
-                Note.Color.RED -> R.color.color_red
-                Note.Color.VIOLET -> R.color.color_violet
-            }
-
-            setBackgroundColor(ContextCompat.getColor(itemView.context, color))
+                      
+            setCardBackgroundColor(note.color.getColorInt(context))
 
             itemView.setOnClickListener {
-                val onItemClick = onItemClick ?: return@setOnClickListener
+//                val onItemClick = onItemClick ?: return@setOnClickListener
 
-                onItemClick.invoke(note)
+                onItemClick?.invoke(note)
             }
         }
     }

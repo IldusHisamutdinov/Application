@@ -28,7 +28,6 @@ data class Note(
         WHITE,
         YELLOW,
         GREEN,
-        BLUE,
         RED,
         VIOLET,
     }

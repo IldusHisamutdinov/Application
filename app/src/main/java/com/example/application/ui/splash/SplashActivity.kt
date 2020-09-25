@@ -1,23 +1,23 @@
 package com.example.application.ui.splash
 
-import androidx.lifecycle.ViewModelProvider
+import android.os.Handler
 import com.example.application.ui.base.BaseActivity
 import com.example.application.ui.main.MainActivity
+import org.koin.android.viewmodel.ext.android.viewModel
 
-class SplashActivity() : BaseActivity<Boolean?, SplashViewState>() {
-    override val viewModel by lazy{
-        ViewModelProvider(this).get(SplashViewModel::class.java)
-    }
+class SplashActivity : BaseActivity<Boolean?, SplashViewState>() {
+
+    override val viewModel: SplashViewModel by viewModel()
 
     override val layoutRes = null
 
-    override fun onResume(){
+    override fun onResume() {
         super.onResume()
-        viewModel.requestUser()
+        Handler().postDelayed({viewModel.requestUser()}, 1000)
     }
 
     override fun renderData(data: Boolean?) {
-        data?.takeIf { it }?. let{
+        data?.takeIf { it }?.let {
             startMainActivity()
         }
     }

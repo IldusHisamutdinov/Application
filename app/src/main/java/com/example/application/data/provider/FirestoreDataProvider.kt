@@ -8,9 +8,8 @@ import com.example.application.data.errors.NoAuthException
 import com.example.application.data.model.NoteResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.FirebaseFirestore.*
 
-class FirestoreDataProvider : RemoteDataProvider {
+class FirestoreDataProvider(val firebaseAuth: FirebaseAuth, val store: FirebaseFirestore) : RemoteDataProvider {
 
     companion object {
         private const val NOTES_COLLECTION = "notes"
@@ -18,9 +17,8 @@ class FirestoreDataProvider : RemoteDataProvider {
     }
 
     private val currentUser
-        get() = FirebaseAuth.getInstance().currentUser
+        get() = firebaseAuth.currentUser
 
-    private val store by lazy { getInstance() }
     private val notesReference
         get() = currentUser?.let {
             store.collection(USERS_COLLECTOIN).document(it.uid).collection(NOTES_COLLECTION)
@@ -67,6 +65,19 @@ class FirestoreDataProvider : RemoteDataProvider {
             notesReference.document(note.id).set(note)
                 .addOnSuccessListener { snapshot ->
                     value = NoteResult.Success(note)
+                }.addOnFailureListener {
+                    value = NoteResult.Error(it)
+                }
+        } catch (t: Throwable) {
+            value = NoteResult.Error(t)
+        }
+    }
+
+    override fun deleteNote(id: String): LiveData<NoteResult> = MutableLiveData<NoteResult>().apply {
+        try {
+            notesReference.document(id).delete()
+                .addOnSuccessListener { snapshot ->
+                    value = NoteResult.Success(null)
                 }.addOnFailureListener {
                     value = NoteResult.Error(it)
                 }

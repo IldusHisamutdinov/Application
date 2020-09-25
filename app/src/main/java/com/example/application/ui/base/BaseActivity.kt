@@ -39,10 +39,10 @@ abstract class BaseActivity<T, S : BaseViewState<T>> : AppCompatActivity() {
 
     abstract fun renderData(data: T)
 
-    protected fun renderError(error: Throwable?) {
+    protected fun renderError(error: Throwable) {
         when (error) {
             is NoAuthException -> startLogin()
-            else -> error?.message?.let { message ->
+            else -> error.message?.let { message ->
                 showError(message)
             }
         }
